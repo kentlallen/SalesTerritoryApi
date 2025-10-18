@@ -3,6 +3,20 @@ using SalesTerritoryApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
+const string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+// Add CORS policy so the API can accept requests from the React UI app.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -10,8 +24,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register the DbContext and configure it to use an in-memory database.
-builder.Services.AddDbContext<TerritoryDbContext>(opt => opt.UseInMemoryDatabase("SalesDB"));
+// Get the connection string from appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("SalesDatabase");
+
+// Register the DbContext and configure it to use PostgreSQL.
+builder.Services.AddDbContext<TerritoryDbContext>(opt =>
+    opt.UseNpgsql(connectionString));
+
 // Register the Repository: When a controller asks for an ITerritoryRepository,
 // provide an instance of EfTerritoryRepository.
 builder.Services.AddScoped<ITerritoryRepository, EfTerritoryRepository>();
@@ -28,6 +47,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseCors(MyAllowSpecificOrigins);
 
 app.MapControllers();
 

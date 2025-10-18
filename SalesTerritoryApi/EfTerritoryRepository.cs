@@ -6,11 +6,8 @@ namespace SalesTerritoryApi
 {
     public class EfTerritoryRepository(TerritoryDbContext _context) : ITerritoryRepository
     {
-        static int id = 0;
         public async Task<SalesTerritory> CreateAsync(SalesTerritory territory)
         {
-            territory.Id = id++;
-            territory.Demographics.Add($"Demo{id}", $"MyDemoInfo{id}");
             _context.Territories.Add(territory);
             await _context.SaveChangesAsync();
             return territory;

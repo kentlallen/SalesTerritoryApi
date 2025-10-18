@@ -1,0 +1,195 @@
+/* src/App.css */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f7fa;
+    color: #333;
+    margin: 0;
+}
+
+.app-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    color: #0073e6; /* Vivint Blue */
+    margin: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    font-weight: 600;
+    color: #555;
+}
+
+td.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+    .btn:hover {
+        background-color: #e0e0e0;
+    }
+
+.btn-primary {
+    background-color: #0073e6;
+    color: white;
+    border-color: #0073e6;
+}
+
+    .btn-primary:hover {
+        background-color: #005bb5;
+    }
+
+.btn-danger {
+    background-color: #d9534f;
+    color: white;
+    border-color: #d9534f;
+}
+
+    .btn-danger:hover {
+        background-color: #c9302c;
+    }
+
+
+/* Modal Styles */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box; /* Important for padding */
+    }
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.error-message {
+    color: #d9534f;
+    margin-top: 1rem;
+}
+
+.btn-secondary {
+    background-color: #5bc0de;
+    color: white;
+    border-color: #5bc0de;
+}
+
+    .btn-secondary:hover {
+        background-color: #31b0d5;
+    }
+
+.details-section {
+    margin-bottom: 1.5rem;
+}
+
+    .details-section strong {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #555;
+    }
+
+    .details-section p {
+        margin: 0;
+    }
+
+.demographics-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+}
+
+    .demographics-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+
+        .demographics-list li:last-child {
+            border-bottom: none;
+        }
+
+    .demographics-list .key {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .demographics-list .value {
+        font-family: monospace;
+        background-color: #eee;
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+    }
