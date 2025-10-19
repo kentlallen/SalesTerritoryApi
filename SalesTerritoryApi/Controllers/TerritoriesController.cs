@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using SalesTerritoryApi.Models.DTOs;
 using SalesTerritoryApi.Models.ViewModels;
@@ -7,7 +8,7 @@ namespace SalesTerritoryApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TerritoriesController(ITerritoryService _territoryService, ILogger<TerritoriesController> _logger) : ControllerBase
+    public class TerritoriesController(ITerritoryService _territoryService, IValidator<CreateTerritoryDto> _createValidator, IValidator<UpdateTerritoryDto> _updateValidator, ILogger<TerritoriesController> _logger) : ControllerBase
     {
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -38,9 +39,25 @@ namespace SalesTerritoryApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<TerritoryViewModel>> CreateTerritory(CreateTerritoryDto dto)
         {
-            if (!ModelState.IsValid)
+            var validationResult = await _createValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = new Dictionary<string, string[]>();
+                foreach (var error in validationResult.Errors)
+                {
+                    var key = error.PropertyName.ToLower();
+                    if (errors.ContainsKey(key))
+                    {
+                        var existingErrors = errors[key].ToList();
+                        existingErrors.Add(error.ErrorMessage);
+                        errors[key] = existingErrors.ToArray();
+                    }
+                    else
+                    {
+                        errors[key] = new[] { error.ErrorMessage };
+                    }
+                }
+                return BadRequest(new { errors });
             }
 
             var createdTerritory = await _territoryService.CreateAsync(dto);
@@ -53,9 +70,25 @@ namespace SalesTerritoryApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TerritoryViewModel>> UpdateTerritory(int id, UpdateTerritoryDto dto)
         {
-            if (!ModelState.IsValid)
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = new Dictionary<string, string[]>();
+                foreach (var error in validationResult.Errors)
+                {
+                    var key = error.PropertyName.ToLower();
+                    if (errors.ContainsKey(key))
+                    {
+                        var existingErrors = errors[key].ToList();
+                        existingErrors.Add(error.ErrorMessage);
+                        errors[key] = existingErrors.ToArray();
+                    }
+                    else
+                    {
+                        errors[key] = new[] { error.ErrorMessage };
+                    }
+                }
+                return BadRequest(new { errors });
             }
 
             var updatedTerritory = await _territoryService.UpdateAsync(id, dto);

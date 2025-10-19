@@ -1,5 +1,6 @@
 using SalesTerritoryApi.Data;
 using SalesTerritoryApi.Models;
+using SalesTerritoryApi.Models.DTOs;
 using SalesTerritoryApi.Repositories;
 using SalesTerritoryApi.Services;
 using SalesTerritoryApi.Services.Interfaces;
@@ -20,7 +21,8 @@ namespace SalesTerritoryApi.Extensions
             services.AddScoped<ITerritoryService, TerritoryService>();
             
             // Validation
-            services.AddScoped<IValidator<SalesTerritory>, SalesTerritoryValidator>();
+            services.AddScoped<IValidator<CreateTerritoryDto>, CreateTerritoryDtoValidator>();
+            services.AddScoped<IValidator<UpdateTerritoryDto>, UpdateTerritoryDtoValidator>();
             
             return services;
         }
