@@ -1,4 +1,6 @@
-﻿namespace SalesTerritoryApi
+﻿using SalesTerritoryApi.Models;
+
+namespace SalesTerritoryApi.Repositories
 {
     public interface ITerritoryRepository
     {

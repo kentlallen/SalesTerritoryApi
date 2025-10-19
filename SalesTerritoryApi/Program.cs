@@ -1,34 +1,84 @@
-using Microsoft.EntityFrameworkCore;
-using SalesTerritoryApi;
+using SalesTerritoryApi.Extensions;
+using SalesTerritoryApi.Middleware;
+using Serilog;
+using Serilog.Debugging;
 
-var builder = WebApplication.CreateBuilder(args);
+// This will print any internal Serilog errors to the console.
+SelfLog.Enable(Console.Error);
 
-// Add services to the container.
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+Log.Information("Starting up the Sales Territory API");
 
-// Register the DbContext and configure it to use an in-memory database.
-builder.Services.AddDbContext<TerritoryDbContext>(opt => opt.UseInMemoryDatabase("SalesDB"));
-// Register the Repository: When a controller asks for an ITerritoryRepository,
-// provide an instance of EfTerritoryRepository.
-builder.Services.AddScoped<ITerritoryRepository, EfTerritoryRepository>();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var builder = WebApplication.CreateBuilder(args);
+
+    // Add Serilog service for better logging
+    // This replaces the default logger with Serilog.
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration) // Reads config from appsettings.json
+        .ReadFrom.Services(services)                   // Allows DI services to be used in logging
+        .Enrich.FromLogContext());                     // Adds contextual information to logs
+
+    const string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+    // Add CORS policy so the API can accept requests from the React UI app.
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(name: MyAllowSpecificOrigins,
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:5173")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+    });
+
+    // Add services to the container.
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+
+    // Add application services using extension methods
+    builder.Services.AddApplicationServices();
+    builder.Services.AddDatabase(builder.Configuration);
+
+
+    var app = builder.Build();
+
+    app.UseSerilogRequestLogging();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    // Add custom exception handling middleware
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+    // Configure the HTTP request pipeline.
+    app.UseHttpsRedirection();
+    app.UseAuthorization();
+    app.UseCors(MyAllowSpecificOrigins);
+
+    app.MapControllers();
+
+    // Migrate database on startup
+    await app.MigrateDatabaseAsync();
+
+    app.Run();
+
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.Information("Shutting down the Sales Territory API");
+    Log.CloseAndFlush();
+}

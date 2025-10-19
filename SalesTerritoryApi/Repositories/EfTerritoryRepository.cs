@@ -1,16 +1,16 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using SalesTerritoryApi.Models;
+using SalesTerritoryApi.Services;
+using SalesTerritoryApi.Data;
 using System.Text;
 
-namespace SalesTerritoryApi
+namespace SalesTerritoryApi.Repositories
 {
     public class EfTerritoryRepository(TerritoryDbContext _context) : ITerritoryRepository
     {
-        static int id = 0;
         public async Task<SalesTerritory> CreateAsync(SalesTerritory territory)
         {
-            territory.Id = id++;
-            territory.Demographics.Add($"Demo{id}", $"MyDemoInfo{id}");
             _context.Territories.Add(territory);
             await _context.SaveChangesAsync();
             return territory;
@@ -23,12 +23,6 @@ namespace SalesTerritoryApi
             {
                 _context.Territories.Remove(territory);
                 await _context.SaveChangesAsync();
-            }
-            string str = "Hello";
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < str.Length; i++)
-            {
-                sb.Append(str[i] + 1);
             }
         }
 
