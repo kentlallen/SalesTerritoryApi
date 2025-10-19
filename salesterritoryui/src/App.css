@@ -28,6 +28,7 @@ h1 {
     color: #0073e6;
     /* Vivint Blue */
     margin: 0;
+    padding-right: 1rem;
 }
 
 table {
@@ -230,4 +231,55 @@ td.actions {
   color: #555;
   margin-bottom: 2rem;
   max-width: 500px;
+}
+
+.network-error-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.network-error-banner p {
+  margin: 0;
+}
+
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+  color: #555;
+  text-align: center;
+}
+
+.loading-indicator p {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #f3f3f3; /* Light grey circle */
+  border-top: 5px solid #0073e6; /* Vivint Blue for the spinning part */
+  border-radius: 50%;
+  
+  /* The animation magic */
+  animation: spin 1s linear infinite;
+}
+
+/* Defines the 'spin' animation.
+  It starts at 0 degrees rotation and ends at 360 degrees, creating a full circle.
+*/
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
