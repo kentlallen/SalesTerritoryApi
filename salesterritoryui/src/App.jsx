@@ -58,7 +58,6 @@ function App() {
     };
 
     const handleSave = async (territory) => {
-        try {
             const isEditing = !!territory.id;
             const url = isEditing ? `${API_URL}/${territory.id}` : API_URL;
             const method = isEditing ? 'PUT' : 'POST';
@@ -71,14 +70,36 @@ function App() {
                 body: JSON.stringify(territory),
             });
 
-            if (!response.ok) throw new Error("Failed to save territory");
+            if (!response.ok) {
+                if (response.status === 400) {
+                    const errorData = await response.json();
+                    // Re-format the API error response to be easier to use in the form
+                    const formattedErrors = {};
+                    for (const key in errorData.errors) {
+                        const lowerKey = key.toLowerCase();
+                        const messages = errorData.errors[key];
+
+                        // Check if this is a ZipCodes error (e.g., "ZipCodes[0]")
+                        if (lowerKey.startsWith('zipcodes[')) {
+                            // If so, aggregate all zip code messages under a single 'zipcodes' key
+                            if (formattedErrors.zipcodes) {
+                                formattedErrors.zipcodes += ` ${messages.join(' ')}`;
+                            } else {
+                                formattedErrors.zipcodes = messages.join(' ');
+                            }
+                        } else {
+                            // Otherwise, handle it as a normal field (like 'Name')
+                            formattedErrors[lowerKey] = messages.join(' ');
+                        }
+                    }
+                    throw formattedErrors;
+                }
+                throw new Error("Failed to save territory");
+            }
 
             setIsFormModalOpen(false);
             setEditingTerritory(null);
             fetchTerritories();
-        } catch (error) {
-            console.error('Failed to save territory:', error);
-        }
     };
 
 

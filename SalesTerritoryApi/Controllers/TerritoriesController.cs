@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-
+using FluentValidation;
 namespace SalesTerritoryApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TerritoriesController(ITerritoryRepository _repository, ILogger<TerritoriesController> _logger) : ControllerBase
+    public class TerritoriesController(IValidator<SalesTerritory> _validator, ITerritoryRepository _repository, ILogger<TerritoriesController> _logger) : ControllerBase
     {
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -38,6 +38,18 @@ namespace SalesTerritoryApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            var validationResult = await _validator.ValidateAsync(territory);
+            
+            if (!validationResult.IsValid)
+            {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+                return ValidationProblem(ModelState);
+            }
+
             var createdTerritory = await _repository.CreateAsync(territory);
             return CreatedAtAction(nameof(GetTerritory), new { id = createdTerritory.Id }, createdTerritory);
         }
@@ -57,6 +69,16 @@ namespace SalesTerritoryApi.Controllers
             if (existingTerritory == null)
             {
                 return NotFound();
+            }
+
+            var validationResult = await _validator.ValidateAsync(territory);
+            if (!validationResult.IsValid)
+            {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+                return ValidationProblem(ModelState);
             }
 
             await _repository.UpdateAsync(territory);

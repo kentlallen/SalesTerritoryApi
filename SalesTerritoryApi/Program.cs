@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SalesTerritoryApi;
 
@@ -23,6 +24,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IValidator<SalesTerritory>, SalesTerritoryValidator>();
 
 // Get the connection string from appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("SalesDatabase");
