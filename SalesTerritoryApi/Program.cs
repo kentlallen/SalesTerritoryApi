@@ -1,9 +1,5 @@
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using SalesTerritoryApi.Controllers;
-using SalesTerritoryApi.Models;
-using SalesTerritoryApi.Repositories;
-using SalesTerritoryApi.Services;
+using SalesTerritoryApi.Extensions;
+using SalesTerritoryApi.Middleware;
 using Serilog;
 using Serilog.Debugging;
 
@@ -43,24 +39,12 @@ try
 
     // Add services to the container.
     builder.Services.AddControllers();
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    builder.Services.AddScoped<IValidator<SalesTerritory>, SalesTerritoryValidator>();
 
-    // Get the connection string from appsettings.json
-    var connectionString = builder.Configuration.GetConnectionString("SalesDatabase");
-
-    // Register the DbContext and configure it to use PostgreSQL.
-    builder.Services.AddDbContext<TerritoryDbContext>(opt => opt.UseNpgsql(connectionString));
-
-    // Register the Repository: When a controller asks for an ITerritoryRepository,
-    // provide an instance of EfTerritoryRepository.
-    builder.Services.AddScoped<ITerritoryRepository, EfTerritoryRepository>();
-
-    // Register global exception handler
-    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-    builder.Services.AddProblemDetails();
+    // Add application services using extension methods
+    builder.Services.AddApplicationServices();
+    builder.Services.AddDatabase(builder.Configuration);
 
 
     var app = builder.Build();
@@ -73,7 +57,8 @@ try
         app.UseSwaggerUI();
     }
 
-    app.UseExceptionHandler();
+    // Add custom exception handling middleware
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
 
     // Configure the HTTP request pipeline.
     app.UseHttpsRedirection();
@@ -81,6 +66,9 @@ try
     app.UseCors(MyAllowSpecificOrigins);
 
     app.MapControllers();
+
+    // Migrate database on startup
+    await app.MigrateDatabaseAsync();
 
     app.Run();
 

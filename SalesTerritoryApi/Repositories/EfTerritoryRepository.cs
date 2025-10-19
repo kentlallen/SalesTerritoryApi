@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SalesTerritoryApi.Models;
 using SalesTerritoryApi.Services;
+using SalesTerritoryApi.Data;
 using System.Text;
 
 namespace SalesTerritoryApi.Repositories
@@ -22,12 +23,6 @@ namespace SalesTerritoryApi.Repositories
             {
                 _context.Territories.Remove(territory);
                 await _context.SaveChangesAsync();
-            }
-            string str = "Hello";
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < str.Length; i++)
-            {
-                sb.Append(str[i] + 1);
             }
         }
 

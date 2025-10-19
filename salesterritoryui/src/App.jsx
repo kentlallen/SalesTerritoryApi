@@ -5,7 +5,7 @@ import { TerritoryForm } from './TerritoryForm';
 import { TerritoryDetailsModal } from './TerritoryDetailsModal'; // <-- Import the new component
 import './App.css';
 
-const API_URL = 'https://localhost:7004/Territories'; // <-- IMPORTANT: Verify your API's port!
+const API_URL = 'https://localhost:7004/api/Territories'; // <-- IMPORTANT: Verify your API's port!
 
 function App() {
     const [territories, setTerritories] = useState([]);

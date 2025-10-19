@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Text.Json;
 using SalesTerritoryApi.Models;
 
-namespace SalesTerritoryApi.Services
+namespace SalesTerritoryApi.Data
 {
     public class TerritoryDbContext : DbContext
     {

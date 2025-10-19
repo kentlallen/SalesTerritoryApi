@@ -1,7 +1,8 @@
 using System.Text.RegularExpressions;
 using FluentValidation;
+using SalesTerritoryApi.Models;
 
-namespace SalesTerritoryApi.Models
+namespace SalesTerritoryApi.Validators
 {
     class SalesTerritoryValidator : AbstractValidator<SalesTerritory>
     {
