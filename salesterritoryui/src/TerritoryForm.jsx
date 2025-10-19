@@ -8,7 +8,8 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
         zipCodes: '',
         demographics: '{}',
     });
-    const [errors, setErrors] = useState({}); // State to hold validation errors, mapping field names to error messages
+    const [errors, setErrors] = useState({}); // State to hold field-specific validation errors, mapping field names to error messages
+    const [serverError, setServerError] = useState('');  // State for generic errors
 
     useEffect(() => {
         if (territory) {
@@ -32,6 +33,7 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({}); // Clear previous errors on a new submission
+        setServerError('');
         
         if(territory) {
             if(formData.name.length === 0 || formData.zipCodes.length === 0 || formData.demographics.length === 0) {
@@ -42,7 +44,7 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
         try {
             demographicsObj = JSON.parse(formData.demographics);
         } catch (err) {
-            setErrors({'demographics': 'must be valid JSON e.g. ' + demographicsPlaceholder});
+            setErrors({'demographics': 'Demographics must be valid JSON e.g. ' + demographicsPlaceholder});
             return;
         }
 
@@ -55,8 +57,14 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
 
         try {
             await onSave(submissionData);
-        } catch (validationErrors) {
-            setErrors(validationErrors);
+        } catch (error) {
+            if (typeof error === 'object' && error !== null) {
+                // This is a validation error from a 400 response
+                setErrors(error);
+            } else {
+                // This is a generic error string from a 500 response or network failure
+                setServerError(error.toString());
+            }
         }
     };
 
@@ -109,6 +117,12 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
                         />
                     </div>
                     {errors.demographics && <p className="error-message">{errors.demographics}</p>}
+                    {/* Display the generic server error here */}
+                    {serverError && (
+                        <div className="server-error-message">
+                        <p>{serverError}</p>
+                        </div>
+                    )}
                     <div className="form-actions">
                         <button type="submit" className="btn btn-primary">Save</button>
                         <button type="button" className="btn" onClick={onCancel}>Cancel</button>

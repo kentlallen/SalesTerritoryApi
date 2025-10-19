@@ -1,8 +1,10 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using SalesTerritoryApi.Models;
+using SalesTerritoryApi.Services;
 using System.Text;
 
-namespace SalesTerritoryApi
+namespace SalesTerritoryApi.Repositories
 {
     public class EfTerritoryRepository(TerritoryDbContext _context) : ITerritoryRepository
     {

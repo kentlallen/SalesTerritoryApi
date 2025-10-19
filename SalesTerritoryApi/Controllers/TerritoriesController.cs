@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
+using SalesTerritoryApi.Models;
+using SalesTerritoryApi.Repositories;
 namespace SalesTerritoryApi.Controllers
 {
     [ApiController]
@@ -10,6 +12,7 @@ namespace SalesTerritoryApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<SalesTerritory>>> GetTerritories()
         {
+            _logger.LogInformation("Getting all territories.");
             var territories = await _repository.GetAllAsync();
             return Ok(territories);
         }
@@ -19,7 +22,7 @@ namespace SalesTerritoryApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SalesTerritory>> GetTerritory(int id)
         {
-            _logger.LogInformation("Getting territory with ID: {Id}", id);
+            _logger.LogInformation("Getting territory with ID: {Id}.", id);
             var territory = await _repository.GetByIdAsync(id);
             if (territory == null)
             {

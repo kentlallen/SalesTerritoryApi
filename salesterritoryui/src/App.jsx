@@ -11,7 +11,7 @@ function App() {
     const [territories, setTerritories] = useState([]);
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingTerritory, setEditingTerritory] = useState(null);
-    const [viewingTerritory, setViewingTerritory] = useState(null); // <-- New state for the details modal
+    const [viewingTerritory, setViewingTerritory] = useState(null);
 
     useEffect(() => {
         fetchTerritories();
@@ -93,8 +93,12 @@ function App() {
                         }
                     }
                     throw formattedErrors;
+                } else {
+                    // For any other error (500, 503, etc.)
+                    const errorJson = await response.json().catch(() => null); // Gracefully handle non-json responses as well
+                    const message = errorJson?.detail || "An unexpected server error occurred."
+                    throw new Error(message);
                 }
-                throw new Error("Failed to save territory");
             }
 
             setIsFormModalOpen(false);
