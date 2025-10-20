@@ -1,5 +1,6 @@
 using SalesTerritoryApi.Extensions;
 using SalesTerritoryApi.Middleware;
+using SalesTerritoryApi.Data;
 using Serilog;
 using Serilog.Debugging;
 
@@ -42,6 +43,9 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
+    // Add health checks
+    builder.Services.AddHealthChecks();
+
     // Add application services using extension methods
     builder.Services.AddApplicationServices();
     builder.Services.AddDatabase(builder.Configuration);
@@ -66,6 +70,17 @@ try
     app.UseCors(MyAllowSpecificOrigins);
 
     app.MapControllers();
+
+    // Map health check endpoints
+    app.MapHealthChecks("/health");
+    app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+    {
+        Predicate = check => check.Tags.Contains("ready")
+    });
+    app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+    {
+        Predicate = _ => false
+    });
 
     // Migrate database on startup
     await app.MigrateDatabaseAsync();
