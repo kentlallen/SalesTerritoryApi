@@ -112,6 +112,8 @@ This is a **full-stack application** consisting of:
    npm install
    npm run dev
    ```
+   
+   The browser will automatically open to `http://localhost:5173`
 
 ### Manual Database Setup (Alternative)
 If you prefer to use a local PostgreSQL installation:
@@ -125,10 +127,26 @@ If you prefer to use a local PostgreSQL installation:
 - **Health Checks**: `https://localhost:7004/health`
 - **Database**: `localhost:5432` (PostgreSQL)
 
+### Port Configuration
+The application uses centralized port configuration:
+- **API Port**: 7004 (defined in `SalesTerritoryApi/Configuration/Ports.cs`)
+- **React Port**: 5173 (defined in `salesterritoryui/src/config/ports.js`)
+
 ## 📊 Database Schema
 
 - **SalesTerritory** - Main entity with Name, ZipCodes, Demographics
 - **Migrations** - Version-controlled database changes
+- **Auto-Seeding** - Sample data automatically populated on first run
+
+### Sample Data
+The application automatically seeds the database with 5 sample territories:
+- **Northwest Region** - Seattle area with tech industry focus
+- **Southeast Region** - Atlanta area with manufacturing/logistics focus  
+- **Southwest Region** - Phoenix area with tourism/real estate focus
+- **Northeast Region** - Boston area with finance/education focus
+- **Central Region** - Chicago area with manufacturing/transportation focus
+
+Each territory includes realistic demographics data (population, income, industries, growth rates) and zip code coverage.
 - **JSON Support** - Demographics stored as JSONB in PostgreSQL
 - **Auto-generated IDs** - Database-generated primary keys
 
@@ -169,14 +187,16 @@ SalesTerritoryApi/
 │   ├── Repositories/            # Data Access Layer
 │   ├── Validators/              # FluentValidation Rules
 │   ├── Middleware/              # Custom Middleware
-│   └── Extensions/              # Service Registration
-    └── docker-compose.yml       # PostgreSQL Database Container
+│   ├── Extensions/              # Service Registration
+│   ├── Configuration/           # Port Configuration
+│   └── docker-compose.yml       # PostgreSQL Database Container
 ├── salesterritoryui/            # React Frontend
 │   ├── src/
 │   │   ├── App.jsx              # Main Application Component
 │   │   ├── TerritoryForm.jsx    # Form Component
 │   │   ├── TerritoryDetailsModal.jsx # Details Modal
-│   │   └── ErrorBoundary.jsx    # Error Boundary Component
+│   │   ├── ErrorBoundary.jsx    # Error Boundary Component
+│   │   └── config/              # Port Configuration
 │   └── package.json             # Dependencies & Scripts
 ```
 

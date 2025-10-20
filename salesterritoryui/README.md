@@ -113,6 +113,8 @@ src/
 - **Responsive Design** - Mobile-friendly interface
 - **Form Validation** - Real-time validation feedback
 - **Modal Interactions** - Intuitive user interactions
+- **Auto Browser Opening** - Development server automatically opens browser
+- **Smart Error Recovery** - Auto-retry with exponential backoff for network errors
 
 ### Code Quality
 - **ESLint Configuration** - Code quality and consistency
@@ -135,6 +137,13 @@ npm install
 ```bash
 npm run dev
 ```
+
+The browser will automatically open to `http://localhost:5173`
+
+### Port Configuration
+The React app uses centralized port configuration defined in `src/config/ports.js`:
+- **React Port**: 5173
+- **API Port**: 7004 (for API calls)
 
 ### Build for Production
 ```bash

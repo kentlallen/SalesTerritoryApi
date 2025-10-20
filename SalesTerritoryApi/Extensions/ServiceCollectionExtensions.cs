@@ -24,6 +24,9 @@ namespace SalesTerritoryApi.Extensions
             services.AddScoped<IValidator<CreateTerritoryDto>, CreateTerritoryDtoValidator>();
             services.AddScoped<IValidator<UpdateTerritoryDto>, UpdateTerritoryDtoValidator>();
             
+            // Database seeding
+            services.AddScoped<DatabaseSeeder>();
+            
             return services;
         }
 

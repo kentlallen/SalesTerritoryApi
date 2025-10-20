@@ -1,6 +1,7 @@
 using SalesTerritoryApi.Extensions;
 using SalesTerritoryApi.Middleware;
 using SalesTerritoryApi.Data;
+using SalesTerritoryApi.Configuration;
 using Serilog;
 using Serilog.Debugging;
 using System.Diagnostics;
@@ -30,13 +31,13 @@ try
 
     const string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-    // CORS setup for the React frontend running on port 5173
+    // CORS setup for the React frontend
     builder.Services.AddCors(options =>
     {
         options.AddPolicy(name: MyAllowSpecificOrigins,
             policy =>
             {
-                policy.WithOrigins("http://localhost:5173") // React dev server
+                policy.WithOrigins(Ports.ReactUrl) // React dev server
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });

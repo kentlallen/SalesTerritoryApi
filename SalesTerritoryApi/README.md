@@ -55,6 +55,7 @@ SalesTerritoryApi/
 - **Health Checks** - Application health monitoring with multiple endpoints
 - **Configuration Management** - Environment-specific settings
 - **Automatic Database Setup** - Auto-starts PostgreSQL container if not running
+- **Database Seeding** - Auto-populates sample data on first run
 
 ## 🛠️ Technology Stack
 
@@ -174,6 +175,11 @@ If you prefer a local PostgreSQL installation:
 - **Liveness Check**: `https://localhost:7004/health/live`
 - **Database**: `localhost:5432` (PostgreSQL)
 
+### Port Configuration
+The API uses centralized port configuration defined in `Configuration/Ports.cs`:
+- **API Port**: 7004
+- **React Port**: 5173 (for CORS configuration)
+
 ## 📊 Database Schema
 
 ### SalesTerritory Entity
@@ -199,6 +205,17 @@ public class SalesTerritory
 - **JSON Support** - Demographics stored as JSONB in PostgreSQL
 - **Migrations** - Version-controlled database changes
 - **Constraints** - Data integrity with validation
+- **Auto-Seeding** - Sample data automatically populated on first run
+
+### Sample Data
+The application automatically seeds the database with 5 realistic territories:
+- **Northwest Region** - Seattle area (Tech, Healthcare, Finance)
+- **Southeast Region** - Atlanta area (Manufacturing, Logistics, Healthcare)
+- **Southwest Region** - Phoenix area (Tourism, Real Estate, Technology)
+- **Northeast Region** - Boston area (Finance, Education, Biotech)
+- **Central Region** - Chicago area (Manufacturing, Transportation, Finance)
+
+Each territory includes comprehensive demographics data (population, median income, primary industries, growth rates) and realistic zip code coverage.
 
 ## 🔍 Validation & Business Rules
 

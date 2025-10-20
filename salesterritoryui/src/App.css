@@ -241,11 +241,30 @@ td.actions {
   margin-bottom: 2rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .network-error-banner p {
   margin: 0;
+}
+
+.retry-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.retry-count {
+  color: #666;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.auto-retry-info {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
 }
 
 .loading-indicator {

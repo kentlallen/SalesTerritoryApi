@@ -2,9 +2,8 @@
 import { useState, useEffect } from 'react';
 import { TerritoryForm } from './TerritoryForm';
 import { TerritoryDetailsModal } from './TerritoryDetailsModal';
+import { API_URL } from './config/ports';
 import './App.css';
-
-const API_URL = 'https://localhost:7004/api/Territories';
 
 function App() {
     const [territories, setTerritories] = useState([]);
@@ -13,18 +12,39 @@ function App() {
     const [editingTerritory, setEditingTerritory] = useState(null);
     const [viewingTerritory, setViewingTerritory] = useState(null);
     const [networkError, setNetworkError] = useState(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     useEffect(() => {
         fetchTerritories();
     }, []);
 
-    const fetchTerritories = async () => {
+    // Auto-retry mechanism when network error occurs
+    useEffect(() => {
+        if (networkError && retryCount < 3) {
+            const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Exponential backoff, max 10s
+            const timer = setTimeout(() => {
+                fetchTerritories(true);
+            }, retryDelay);
+            
+            return () => clearTimeout(timer);
+        }
+    }, [networkError, retryCount]);
+
+    const fetchTerritories = async (isRetry = false) => {
         setIsLoading(true);
+        setNetworkError(null); // Clear any existing network errors
+        
+        if (isRetry) {
+            setRetryCount(prev => prev + 1);
+        }
+        
         try {
             const response = await fetch(API_URL);
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
             setTerritories(data);
+            setNetworkError(null); // Clear error on successful fetch
+            setRetryCount(0); // Reset retry count on success
         } catch (error) {
             console.error('Failed to fetch territories:', error);
             // Distinguish between network errors and other failures
@@ -36,6 +56,10 @@ function App() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleRetry = () => {
+        fetchTerritories(true);
     };
 
     const handleAddNew = () => {
@@ -118,8 +142,20 @@ function App() {
         <div className="app-container">
             {networkError && (
                 <div className="network-error-banner">
-                    <p><strong>Connection Error:</strong> {networkError}</p>
-                    <button className="btn btn-primary" onClick={fetchTerritories}>Retry</button>
+                    <div>
+                        <p><strong>Connection Error:</strong> {networkError}</p>
+                        {retryCount < 3 && (
+                            <p className="auto-retry-info">Auto-retrying in a few seconds...</p>
+                        )}
+                    </div>
+                    <div className="retry-section">
+                        <button className="btn btn-primary" onClick={handleRetry} disabled={isLoading}>
+                            {isLoading ? 'Retrying...' : 'Retry Now'}
+                        </button>
+                        {retryCount > 0 && (
+                            <span className="retry-count">(Attempt {retryCount + 1})</span>
+                        )}
+                    </div>
                 </div>
             )}
             <header>
