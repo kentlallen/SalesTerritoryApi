@@ -1,7 +1,5 @@
-// src/TerritoryDetailsModal.jsx
-
+// Modal component for displaying territory details in read-only mode
 export function TerritoryDetailsModal({ territory, onClose }) {
-    // If no territory is provided, don't render anything
     if (!territory) {
         return null;
     }

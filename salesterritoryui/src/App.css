@@ -26,7 +26,6 @@ header {
 
 h1 {
     color: #0073e6;
-    /* Vivint Blue */
     margin: 0;
     padding-right: 1rem;
 }
@@ -269,7 +268,6 @@ td.actions {
   width: 48px;
   height: 48px;
   border: 5px solid #f3f3f3; /* Light grey circle */
-  border-top: 5px solid #0073e6; /* Vivint Blue for the spinning part */
   border-radius: 50%;
   
   /* The animation magic */

@@ -4,6 +4,7 @@ using FluentValidation;
 
 namespace SalesTerritoryApi.Middleware
 {
+    // Global exception handler - catches all unhandled exceptions and returns consistent error responses
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
@@ -19,7 +20,7 @@ namespace SalesTerritoryApi.Middleware
         {
             try
             {
-                await _next(context);
+                await _next(context); // Continue to the next middleware in the pipeline
             }
             catch (Exception ex)
             {
@@ -34,6 +35,7 @@ namespace SalesTerritoryApi.Middleware
 
             object response;
 
+            // Handle different exception types with appropriate HTTP status codes
             switch (exception)
             {
                 case ValidationException validationException:
@@ -81,6 +83,7 @@ namespace SalesTerritoryApi.Middleware
                     break;
             }
 
+            // Serialize response with camelCase naming to match frontend expectations
             var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase

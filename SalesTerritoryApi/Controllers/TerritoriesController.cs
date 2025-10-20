@@ -8,6 +8,7 @@ namespace SalesTerritoryApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    // Using primary constructor with dependency injection - keeps the controller lean
     public class TerritoriesController(ITerritoryService _territoryService, IValidator<CreateTerritoryDto> _createValidator, IValidator<UpdateTerritoryDto> _updateValidator, ILogger<TerritoriesController> _logger) : ControllerBase
     {
         [HttpGet]
@@ -39,9 +40,11 @@ namespace SalesTerritoryApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<TerritoryViewModel>> CreateTerritory(CreateTerritoryDto dto)
         {
+            // FluentValidation - run business rules before hitting the service layer
             var validationResult = await _createValidator.ValidateAsync(dto);
             if (!validationResult.IsValid)
             {
+                // Transform FluentValidation errors into a format the frontend expects
                 var errors = new Dictionary<string, string[]>();
                 foreach (var error in validationResult.Errors)
                 {
@@ -70,6 +73,7 @@ namespace SalesTerritoryApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TerritoryViewModel>> UpdateTerritory(int id, UpdateTerritoryDto dto)
         {
+            // Same validation pattern as create - keeping it consistent
             var validationResult = await _updateValidator.ValidateAsync(dto);
             if (!validationResult.IsValid)
             {

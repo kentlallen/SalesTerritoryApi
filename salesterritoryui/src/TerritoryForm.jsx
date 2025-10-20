@@ -1,5 +1,4 @@
-// src/TerritoryForm.jsx
-
+// Form component for creating and editing territories
 import { useState, useEffect } from 'react';
 
 export function TerritoryForm({ territory, onSave, onCancel }) {
@@ -8,19 +7,19 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
         zipCodes: '',
         demographics: '{}',
     });
-    const [errors, setErrors] = useState({}); // State to hold field-specific validation errors, mapping field names to error messages
-    const [serverError, setServerError] = useState('');  // State for generic errors
+    const [errors, setErrors] = useState({}); // Field-specific validation errors from the API
+    const [serverError, setServerError] = useState(''); // Generic server errors
 
     useEffect(() => {
         if (territory) {
             setFormData({
                 name: territory.name,
                 zipCodes: territory.zipCodes.join(', '),
-                // Convert the demographics object to a nicely formatted JSON string for the textarea
+                // Format demographics as pretty JSON for editing
                 demographics: JSON.stringify(territory.demographics, null, 2),
             });
         } else {
-            // Reset for new territory
+            // Reset form for new territory
             setFormData({ name: '', zipCodes: '', demographics: '' });
         }
     }, [territory]);
@@ -32,14 +31,10 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrors({}); // Clear previous errors on a new submission
+        setErrors({}); // Clear previous errors
         setServerError('');
         
-        if(territory) {
-            if(formData.name.length === 0 || formData.zipCodes.length === 0 || formData.demographics.length === 0) {
-                setFormData({ name: territory.name, zipCodes: territory.zipCodes, demographics: JSON.stringify(territory.demographics, null, 2) });
-            }
-        }
+        // Validate JSON format before submission
         let demographicsObj;
         try {
             demographicsObj = JSON.parse(formData.demographics);
@@ -49,7 +44,7 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
         }
 
         const submissionData = {
-            ...territory, // Includes the ID if we are editing
+            ...territory, // Preserve ID for updates
             name: formData.name,
             zipCodes: formData.zipCodes.split(',').map(zip => zip.trim()).filter(zip => zip),
             demographics: demographicsObj,
@@ -59,10 +54,10 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
             await onSave(submissionData);
         } catch (error) {
             if (typeof error === 'object' && error !== null) {
-                // This is a validation error from a 400 response
+                // API validation errors (400 response)
                 setErrors(error);
             } else {
-                // This is a generic error string from a 500 response or network failure
+                // Server errors (500, network failures)
                 setServerError(error.toString());
             }
         }

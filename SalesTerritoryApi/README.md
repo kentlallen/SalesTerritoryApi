@@ -52,7 +52,7 @@ SalesTerritoryApi/
 - **Structured Logging** - Serilog integration with contextual information
 - **CORS Configuration** - Secure cross-origin resource sharing
 - **Swagger/OpenAPI** - Interactive API documentation
-- **Health Checks** - Application health monitoring
+- **Health Checks** - Application health monitoring with multiple endpoints
 - **Configuration Management** - Environment-specific settings
 
 ## 🛠️ Technology Stack
@@ -67,6 +67,8 @@ SalesTerritoryApi/
 
 ## 📋 API Endpoints
 
+### Business Endpoints
+
 | Method | Endpoint | Description | Response |
 |--------|----------|-------------|----------|
 | `GET` | `/api/Territories` | Get all territories | `200 OK` |
@@ -74,6 +76,14 @@ SalesTerritoryApi/
 | `POST` | `/api/Territories` | Create new territory | `201 Created` / `400 Bad Request` |
 | `PUT` | `/api/Territories/{id}` | Update territory | `200 OK` / `400 Bad Request` / `404 Not Found` |
 | `DELETE` | `/api/Territories/{id}` | Delete territory | `204 No Content` / `404 Not Found` |
+
+### Health Check Endpoints
+
+| Method | Endpoint | Description | Response |
+|--------|----------|-------------|----------|
+| `GET` | `/health` | Basic application health check | `200 OK` / `503 Service Unavailable` |
+| `GET` | `/health/ready` | Readiness check (app ready to serve traffic) | `200 OK` / `503 Service Unavailable` |
+| `GET` | `/health/live` | Liveness check (app is alive) | `200 OK` |
 
 ## 🎯 Advanced Design Patterns
 
@@ -184,6 +194,13 @@ public class SalesTerritory
 - **Field-level Errors** - Specific validation feedback
 
 ## 🚀 Production-Ready Features
+
+### Health Monitoring
+- **Basic Health Check** - `/health` endpoint for overall application health
+- **Readiness Check** - `/health/ready` endpoint for traffic readiness
+- **Liveness Check** - `/health/live` endpoint for application liveness
+- **Container Integration** - Kubernetes and Docker health check support
+- **Load Balancer Integration** - Traffic routing based on health status
 
 ### Logging & Monitoring
 - **Structured Logging** - Serilog with contextual information

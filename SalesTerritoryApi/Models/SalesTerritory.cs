@@ -15,9 +15,8 @@ namespace SalesTerritoryApi.Models
         [Required]
         public List<string> ZipCodes { get; set; } = new();
 
-        // This flexible dictionary mimics a JSON object, perfect for storing
-        // varied demographic data from external sources. In a real Postgres DB,
-        // this would be mapped to a JSONB column.
+        // Flexible JSON storage for demographic data - EF Core maps this to JSONB in PostgreSQL
+        // This allows us to store varying demographic structures without schema changes
         public Dictionary<string, object> Demographics { get; set; } = new();
     }
 }

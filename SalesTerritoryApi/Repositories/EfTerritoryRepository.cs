@@ -7,6 +7,7 @@ using System.Text;
 
 namespace SalesTerritoryApi.Repositories
 {
+    // Repository pattern implementation - abstracts data access from the service layer
     public class EfTerritoryRepository(TerritoryDbContext _context) : ITerritoryRepository
     {
         public async Task<SalesTerritory> CreateAsync(SalesTerritory territory)
@@ -38,30 +39,23 @@ namespace SalesTerritoryApi.Repositories
 
         public async Task UpdateAsync(SalesTerritory territory)
         {
-            // The controller's GetByIdAsync call caused an entity to be tracked.
-            // The 'territory' object here is a new instance from the request body.
-            // To prevent a tracking conflict, we must not attach this new instance.
-            //
-            // The correct pattern is to find the currently tracked instance and update
-            // its property values from the incoming object. FindAsync is highly
-            // efficient here as it will check the local cache of tracked entities
-            // before making a database call.
+            // EF Core tracking issue: the incoming 'territory' is a new instance from the request body
+            // but we might already have a tracked entity from the controller's GetByIdAsync call.
+            // Using FindAsync is efficient - it checks the local cache first before hitting the DB.
             var trackedEntity = await _context.Territories.FindAsync(territory.Id);
 
             if (trackedEntity != null)
             {
-                // This copies the scalar values from the 'territory' object to the
-                // 'trackedEntity' that the DbContext is already aware of.
+                // Copy scalar properties from the incoming object to the tracked entity
                 _context.Entry(trackedEntity).CurrentValues.SetValues(territory);
 
-                // We also need to handle the collection properties manually.
+                // Collections need to be handled manually since SetValues doesn't copy them
                 trackedEntity.ZipCodes = territory.ZipCodes;
                 trackedEntity.Demographics = territory.Demographics;
 
                 await _context.SaveChangesAsync();
             }
-            // If trackedEntity is null, the controller's check already returned a 404,
-            // so we don't need to handle that case here.
+            // If trackedEntity is null, the service layer already handled the 404 case
         }
     }
 }

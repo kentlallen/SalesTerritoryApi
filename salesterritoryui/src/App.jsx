@@ -1,11 +1,10 @@
-// src/App.jsx
-
+// Main application component - handles state management and API communication
 import { useState, useEffect } from 'react';
 import { TerritoryForm } from './TerritoryForm';
-import { TerritoryDetailsModal } from './TerritoryDetailsModal'; // <-- Import the new component
+import { TerritoryDetailsModal } from './TerritoryDetailsModal';
 import './App.css';
 
-const API_URL = 'https://localhost:7004/api/Territories'; // <-- IMPORTANT: Verify your API's port!
+const API_URL = 'https://localhost:7004/api/Territories';
 
 function App() {
     const [territories, setTerritories] = useState([]);
@@ -28,11 +27,11 @@ function App() {
             setTerritories(data);
         } catch (error) {
             console.error('Failed to fetch territories:', error);
-            // TypeError is how fetch reports a network failure (like connection refused)
+            // Distinguish between network errors and other failures
             if (error instanceof TypeError) {
-            setNetworkError("Could not connect to the API. Please ensure the server is running and accessible.");
+                setNetworkError("Could not connect to the API. Please ensure the server is running and accessible.");
             } else {
-            setNetworkError("An unexpected error occurred while fetching data.");
+                setNetworkError("An unexpected error occurred while fetching data.");
             }
         } finally {
             setIsLoading(false);
@@ -49,7 +48,6 @@ function App() {
         setIsFormModalOpen(true);
     };
 
-    // Function to open the details modal
     const handleViewDetails = (territory) => {
         setViewingTerritory(territory);
     };
@@ -69,52 +67,50 @@ function App() {
     };
 
     const handleSave = async (territory) => {
-            const isEditing = !!territory.id;
-            const url = isEditing ? `${API_URL}/${territory.id}` : API_URL;
-            const method = isEditing ? 'PUT' : 'POST';
+        const isEditing = !!territory.id;
+        const url = isEditing ? `${API_URL}/${territory.id}` : API_URL;
+        const method = isEditing ? 'PUT' : 'POST';
 
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(territory),
-            });
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(territory),
+        });
 
-            if (!response.ok) {
-                if (response.status === 400) {
-                    const errorData = await response.json();
-                    // Re-format the API error response to be easier to use in the form
-                    const formattedErrors = {};
-                    for (const key in errorData.errors) {
-                        const lowerKey = key.toLowerCase();
-                        const messages = errorData.errors[key];
+        if (!response.ok) {
+            if (response.status === 400) {
+                const errorData = await response.json();
+                // Transform API validation errors into a format the form can use
+                const formattedErrors = {};
+                for (const key in errorData.errors) {
+                    const lowerKey = key.toLowerCase();
+                    const messages = errorData.errors[key];
 
-                        // Check if this is a ZipCodes error (e.g., "ZipCodes[0]")
-                        if (lowerKey.startsWith('zipcodes[')) {
-                            // If so, aggregate all zip code messages under a single 'zipcodes' key
-                            if (formattedErrors.zipcodes) {
-                                formattedErrors.zipcodes += ` ${messages.join(' ')}`;
-                            } else {
-                                formattedErrors.zipcodes = messages.join(' ');
-                            }
+                    // Handle array validation errors (like ZipCodes[0])
+                    if (lowerKey.startsWith('zipcodes[')) {
+                        if (formattedErrors.zipcodes) {
+                            formattedErrors.zipcodes += ` ${messages.join(' ')}`;
                         } else {
-                            // Otherwise, handle it as a normal field (like 'Name')
-                            formattedErrors[lowerKey] = messages.join(' ');
+                            formattedErrors.zipcodes = messages.join(' ');
                         }
+                    } else {
+                        formattedErrors[lowerKey] = messages.join(' ');
                     }
-                    throw formattedErrors;
-                } else {
-                    // For any other error (500, 503, etc.)
-                    const errorJson = await response.json().catch(() => null); // Gracefully handle non-json responses as well
-                    const message = errorJson?.detail || "An unexpected server error occurred."
-                    throw new Error(message);
                 }
+                throw formattedErrors;
+            } else {
+                // Handle server errors (500, 503, etc.)
+                const errorJson = await response.json().catch(() => null);
+                const message = errorJson?.detail || "An unexpected server error occurred."
+                throw new Error(message);
             }
+        }
 
-            setIsFormModalOpen(false);
-            setEditingTerritory(null);
-            fetchTerritories();
+        setIsFormModalOpen(false);
+        setEditingTerritory(null);
+        fetchTerritories();
     };
 
 
@@ -169,7 +165,7 @@ function App() {
                 )}
             </main>
 
-            {/* Render the Form Modal */}
+            {/* Form modal for create/edit operations */}
             {isFormModalOpen && (
                 <TerritoryForm
                     territory={editingTerritory}
@@ -181,7 +177,7 @@ function App() {
                 />
             )}
 
-            {/* Render the Details Modal */}
+            {/* Details modal for viewing territory information */}
             <TerritoryDetailsModal
                 territory={viewingTerritory}
                 onClose={() => setViewingTerritory(null)}

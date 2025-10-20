@@ -10,6 +10,7 @@ namespace SalesTerritoryApi.Services
     {
         private readonly ITerritoryRepository _repository;
 
+        // Service layer - contains business logic and coordinates between controller and repository
         public TerritoryService(ITerritoryRepository repository)
         {
             _repository = repository;
@@ -29,6 +30,7 @@ namespace SalesTerritoryApi.Services
 
         public async Task<TerritoryViewModel> CreateAsync(CreateTerritoryDto dto)
         {
+            // Map DTO to domain entity - this is where business rules would go
             var territory = new SalesTerritory
             {
                 Name = dto.Name,
@@ -46,6 +48,7 @@ namespace SalesTerritoryApi.Services
             if (existingTerritory == null)
                 return null;
 
+            // Update the tracked entity with new values
             existingTerritory.Name = dto.Name;
             existingTerritory.ZipCodes = dto.ZipCodes;
             existingTerritory.Demographics = dto.Demographics;
@@ -64,6 +67,7 @@ namespace SalesTerritoryApi.Services
             return true;
         }
 
+        // Helper method to map domain entities to view models (separation of concerns)
         private static TerritoryViewModel MapToViewModel(SalesTerritory territory)
         {
             return new TerritoryViewModel

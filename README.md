@@ -56,11 +56,17 @@ This is a **full-stack application** consisting of:
 
 ## 📋 API Endpoints
 
+### Business Endpoints
 - `GET /api/Territories` - Get all territories
 - `GET /api/Territories/{id}` - Get territory by ID
 - `POST /api/Territories` - Create new territory
 - `PUT /api/Territories/{id}` - Update territory
 - `DELETE /api/Territories/{id}` - Delete territory
+
+### Health Check Endpoints
+- `GET /health` - Basic application health check
+- `GET /health/ready` - Readiness check (app ready to serve traffic)
+- `GET /health/live` - Liveness check (app is alive)
 
 ## 🎯 Design Patterns & Best Practices
 
@@ -106,6 +112,7 @@ npm run dev
 ### Access Points
 - **API**: `https://localhost:7004/swagger`
 - **Frontend**: `http://localhost:5173`
+- **Health Checks**: `https://localhost:7004/health`
 
 ## 📊 Database Schema
 

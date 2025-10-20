@@ -1,5 +1,4 @@
-// src/ErrorBoundary.jsx
-
+// Error boundary component - catches JavaScript errors anywhere in the component tree
 import React from 'react';
 
 class ErrorBoundary extends React.Component {
@@ -8,14 +7,12 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null };
   }
 
-  // This lifecycle method is called to update the state so the next render
-  // will show the fallback UI.
+  // Called when an error is thrown - updates state to show fallback UI
   static getDerivedStateFromError(error) {
     return { hasError: true, error: error };
   }
 
-  // This lifecycle method is used for logging the error information.
-  // In a production app, I would send this to a logging service like Sentry or LogRocket.
+  // Logs error details - in production this would go to a service like Sentry
   componentDidCatch(error, errorInfo) {
     console.error("Uncaught error:", error, errorInfo);
   }
@@ -36,7 +33,7 @@ class ErrorBoundary extends React.Component {
       );
     }
 
-    // If there's no error, just render the children components.
+    // No error - render children normally
     return this.props.children;
   }
 }
