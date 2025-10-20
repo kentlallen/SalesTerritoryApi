@@ -249,35 +249,36 @@ td.actions {
 }
 
 .loading-indicator {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 4rem 2rem;
-  color: #555;
-  text-align: center;
-}
-
-.loading-indicator p {
-  margin-top: 1rem;
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 5px solid #f3f3f3; /* Light grey circle */
-  border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 2rem;
+    color: #555;
+    text-align: center;
+  }
   
-  /* The animation magic */
-  animation: spin 1s linear infinite;
-}
-
-/* Defines the 'spin' animation.
-  It starts at 0 degrees rotation and ends at 360 degrees, creating a full circle.
-*/
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+  .loading-indicator p {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #f3f3f3; /* Light grey circle */
+    border-top: 5px solid #0073e6;
+    border-radius: 50%;
+    
+    /* The animation magic */
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Defines the 'spin' animation.
+    It starts at 0 degrees rotation and ends at 360 degrees, creating a full circle.
+  */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

@@ -54,6 +54,7 @@ SalesTerritoryApi/
 - **Swagger/OpenAPI** - Interactive API documentation
 - **Health Checks** - Application health monitoring with multiple endpoints
 - **Configuration Management** - Environment-specific settings
+- **Automatic Database Setup** - Auto-starts PostgreSQL container if not running
 
 ## 🛠️ Technology Stack
 
@@ -132,27 +133,46 @@ public interface ITerritoryService
 
 ### Prerequisites
 - .NET 8 SDK
-- PostgreSQL
+- Docker & Docker Compose (for database)
 - Entity Framework Core CLI
 
-### Database Setup
+### Quick Start with Docker
+
+1. **Start the API (Auto-starts Database)**
+   ```bash
+   dotnet restore
+   dotnet ef database update
+   dotnet run
+   ```
+   
+   The .NET app will automatically check for and start the PostgreSQL container if needed.
+
+### Manual Database Management
+If you need to manage the database container manually:
 ```bash
-# Update connection string in appsettings.json
-# Run migrations
-dotnet ef database update
+# Start the database
+docker-compose up -d postgres
+
+# Stop the database
+docker-compose down
+
+# View logs
+docker-compose logs postgres
 ```
 
-### Development
-```bash
-dotnet restore
-dotnet run
-```
+### Manual Database Setup (Alternative)
+If you prefer a local PostgreSQL installation:
+1. Install PostgreSQL locally
+2. Create database: `salesdb`
+3. Update connection string in `appsettings.json`
+4. Run migrations: `dotnet ef database update`
 
 ### Access Points
 - **API**: `https://localhost:7004/swagger`
 - **Health Check**: `https://localhost:7004/health`
 - **Readiness Check**: `https://localhost:7004/health/ready`
 - **Liveness Check**: `https://localhost:7004/health/live`
+- **Database**: `localhost:5432` (PostgreSQL)
 
 ## 📊 Database Schema
 

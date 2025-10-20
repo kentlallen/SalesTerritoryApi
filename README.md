@@ -92,27 +92,38 @@ This is a **full-stack application** consisting of:
 ### Prerequisites
 - .NET 8 SDK
 - Node.js 18+
-- PostgreSQL
+- Docker & Docker Compose (for database)
 
-### Backend Setup
-```bash
-cd SalesTerritoryApi
-dotnet restore
-dotnet ef database update
-dotnet run
-```
+### Quick Start with Docker
 
-### Frontend Setup
-```bash
-cd salesterritoryui
-npm install
-npm run dev
-```
+1. **Backend Setup (Auto-starts Database)**
+   ```bash
+   cd SalesTerritoryApi
+   dotnet restore
+   dotnet ef database update
+   dotnet run
+   ```
+   
+   The .NET app will automatically check for and start the PostgreSQL container if needed.
+
+3. **Frontend Setup**
+   ```bash
+   cd salesterritoryui
+   npm install
+   npm run dev
+   ```
+
+### Manual Database Setup (Alternative)
+If you prefer to use a local PostgreSQL installation:
+1. Install PostgreSQL locally
+2. Create a database named `salesdb`
+3. Update the connection string in `SalesTerritoryApi/appsettings.json`
 
 ### Access Points
 - **API**: `https://localhost:7004/swagger`
 - **Frontend**: `http://localhost:5173`
 - **Health Checks**: `https://localhost:7004/health`
+- **Database**: `localhost:5432` (PostgreSQL)
 
 ## 📊 Database Schema
 
@@ -149,7 +160,7 @@ npm run dev
 ## 📁 Project Structure
 
 ```
-TaskManagerApi/
+SalesTerritoryApi/
 ├── SalesTerritoryApi/           # .NET 8 Web API Backend
 │   ├── Controllers/             # API Controllers
 │   ├── Data/                    # Entity Framework DbContext
@@ -159,13 +170,44 @@ TaskManagerApi/
 │   ├── Validators/              # FluentValidation Rules
 │   ├── Middleware/              # Custom Middleware
 │   └── Extensions/              # Service Registration
-└── salesterritoryui/            # React Frontend
-    ├── src/
-    │   ├── App.jsx              # Main Application Component
-    │   ├── TerritoryForm.jsx    # Form Component
-    │   ├── TerritoryDetailsModal.jsx # Details Modal
-    │   └── ErrorBoundary.jsx    # Error Boundary Component
-    └── package.json             # Dependencies & Scripts
+    └── docker-compose.yml       # PostgreSQL Database Container
+├── salesterritoryui/            # React Frontend
+│   ├── src/
+│   │   ├── App.jsx              # Main Application Component
+│   │   ├── TerritoryForm.jsx    # Form Component
+│   │   ├── TerritoryDetailsModal.jsx # Details Modal
+│   │   └── ErrorBoundary.jsx    # Error Boundary Component
+│   └── package.json             # Dependencies & Scripts
+```
+
+## 🐳 Docker Configuration
+
+The project includes a `docker-compose.yml` file for easy database setup:
+
+### Database Container Features
+- **PostgreSQL 15** - Latest stable version with Alpine Linux
+- **Health Checks** - Automatic container health monitoring
+- **Persistent Storage** - Data persists between container restarts
+- **Default Credentials** - `postgres/mysecretpassword` for development
+- **Database Name** - `salesdb` (matches .NET app configuration)
+- **Port Mapping** - Accessible on `localhost:5432`
+
+### Container Management
+```bash
+# Navigate to the .NET app directory
+cd SalesTerritoryApi
+
+# Start the database manually (if needed)
+docker-compose up -d postgres
+
+# Stop the database
+docker-compose down
+
+# View logs
+docker-compose logs postgres
+
+# Reset database (removes all data)
+docker-compose down -v
 ```
 
 This project demonstrates **senior-level software engineering** skills including clean architecture, modern development practices, comprehensive error handling, and production-ready features suitable for enterprise applications.

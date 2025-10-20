@@ -119,7 +119,7 @@ function App() {
             {networkError && (
                 <div className="network-error-banner">
                     <p><strong>Connection Error:</strong> {networkError}</p>
-                    <button className="btn" onClick={fetchTerritories}>Retry</button>
+                    <button className="btn btn-primary" onClick={fetchTerritories}>Retry</button>
                 </div>
             )}
             <header>
