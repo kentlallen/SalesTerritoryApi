@@ -200,6 +200,28 @@ SalesTerritoryApi/
 │   └── package.json             # Dependencies & Scripts
 ```
 
+## 🚀 VS Code Development Setup
+
+The project includes pre-configured VS Code launch configurations for easy development:
+
+### Launch Configurations
+
+#### Individual Applications
+- **🚀 Run .NET Backend** - Start the .NET API (no debugging)
+- **🐛 Debug .NET Backend** - Start the .NET API with debugging support
+- **🚀 Run React Frontend** - Start the React development server (no debugging)
+- **🐛 Debug React Frontend** - Start the React development server with debugging support
+
+#### Full Application
+- **🚀 Run Full Application** - Start both backend and frontend (no debugging)
+- **🐛 Debug Full Application** - Start both backend and frontend with debugging support
+
+### How to Use
+1. Open the project in VS Code
+2. Go to the "Run and Debug" panel (Ctrl+Shift+D)
+3. Select your desired configuration from the dropdown
+4. Click the "Play" button or press F5
+
 ## 🐳 Docker Configuration
 
 The project includes a `docker-compose.yml` file for easy database setup:
