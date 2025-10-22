@@ -5,6 +5,7 @@ using SalesTerritoryApi.Configuration;
 using Serilog;
 using Serilog.Debugging;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 // Enable Serilog's internal logging to console for debugging
 SelfLog.Enable(Console.Error);
@@ -44,12 +45,32 @@ try
     });
 
     // Core ASP.NET services
-    builder.Services.AddControllers();
+    builder.Services.AddControllers(options =>
+    {
+        // Add the validation filter to all controller actions
+        options.Filters.Add<ValidationFilterAttribute>();
+    });
+
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
     // Health checks for monitoring and load balancers
     builder.Services.AddHealthChecks();
+
+    // Add problem details middleware for consistent error responses
+    builder.Services.AddProblemDetails();
+    // Configure the API behavior options to return a 422 Unprocessable Entity response for invalid model state
+    builder.Services.Configure<ApiBehaviorOptions>(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var problemDetails = new ValidationProblemDetails(context.ModelState)
+            {
+                Status = StatusCodes.Status422UnprocessableEntity
+            };
+            return new UnprocessableEntityObjectResult(problemDetails);
+        };
+    });
 
     // Custom service registration using extension methods (keeps Program.cs clean)
     builder.Services.AddApplicationServices(); // Repository, Service, and Validation registrations

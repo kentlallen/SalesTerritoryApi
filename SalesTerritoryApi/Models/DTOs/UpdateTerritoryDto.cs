@@ -4,11 +4,9 @@ namespace SalesTerritoryApi.Models.DTOs
 {
     public class UpdateTerritoryDto
     {
-        [Required]
-        [StringLength(100, ErrorMessage = "Name must be less than 100 characters")]
+        // Validation rules are applied in the ValidationFilterAttribute, so we don't need to validate with DataAnnotations
         public string Name { get; set; } = string.Empty;
 
-        [Required]
         public List<string> ZipCodes { get; set; } = new();
 
         public Dictionary<string, object> Demographics { get; set; } = new();

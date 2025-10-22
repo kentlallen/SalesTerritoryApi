@@ -5,6 +5,9 @@ using SalesTerritoryApi.Models;
 
 namespace SalesTerritoryApi.Data
 {
+    /// <summary>
+    /// Entity Framework Core DbContext for the SalesTerritory entity
+    /// </summary>
     public class TerritoryDbContext : DbContext
     {
         public TerritoryDbContext(DbContextOptions<TerritoryDbContext> options) : base(options) { }

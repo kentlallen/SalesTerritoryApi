@@ -1,10 +1,10 @@
-using System.Net;
-using System.Text.Json;
-using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SalesTerritoryApi.Middleware
 {
-    // Global exception handler - catches all unhandled exceptions and returns consistent error responses
+    /// <summary>
+    /// Global exception handler - catches all unhandled exceptions and returns consistent error responses
+    /// </summary>
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
@@ -16,6 +16,9 @@ namespace SalesTerritoryApi.Middleware
             _logger = logger;
         }
 
+        /// <summary>
+        /// Invokes the next middleware in the pipeline and catches any unhandled exceptions
+        /// </summary>
         public async Task InvokeAsync(HttpContext context)
         {
             try
@@ -29,67 +32,41 @@ namespace SalesTerritoryApi.Middleware
             }
         }
 
+        /// <summary>
+        /// Handles different exception types with appropriate HTTP status codes and returns a consistent error response
+        /// </summary>
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
 
-            object response;
-
-            // Handle different exception types with appropriate HTTP status codes
-            switch (exception)
+            // Handle different exception types with appropriate HTTP status codes and return a consistent error response
+            ProblemDetails problemDetails = exception switch
             {
-                case ValidationException validationException:
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    response = new
-                    {
-                        title = "Validation failed",
-                        status = (int)HttpStatusCode.BadRequest,
-                        detail = "One or more validation errors occurred.",
-                        errors = validationException.Errors.ToDictionary(
-                            e => e.PropertyName,
-                            e => new[] { e.ErrorMessage }
-                        )
-                    };
-                    break;
+                ArgumentException => new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid argument",
+                    Detail = exception.Message
+                },
+                
+                KeyNotFoundException => new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = exception.Message
+                },
+                
+                _ => new ProblemDetails
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Title = "An error occurred",
+                    Detail = "An unexpected error occurred while processing your request."
+                }
+            };
 
-                case ArgumentException:
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    response = new
-                    {
-                        title = "Invalid argument",
-                        status = (int)HttpStatusCode.BadRequest,
-                        detail = exception.Message
-                    };
-                    break;
-
-                case KeyNotFoundException:
-                    context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-                    response = new
-                    {
-                        title = "Resource not found",
-                        status = (int)HttpStatusCode.NotFound,
-                        detail = exception.Message
-                    };
-                    break;
-
-                default:
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    response = new
-                    {
-                        title = "An error occurred",
-                        status = (int)HttpStatusCode.InternalServerError,
-                        detail = "An unexpected error occurred while processing your request."
-                    };
-                    break;
-            }
-
-            // Serialize response with camelCase naming to match frontend expectations
-            var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
-
-            await context.Response.WriteAsync(jsonResponse);
+            // Set the response status code and write the problem details to the response
+            context.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
+            await context.Response.WriteAsJsonAsync(problemDetails);
         }
     }
 }

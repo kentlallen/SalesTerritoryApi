@@ -1,5 +1,8 @@
 namespace SalesTerritoryApi.Configuration
 {
+    /// <summary>
+    /// Centralized port configuration for the application
+    /// </summary>
     public static class Ports
     {
         public const int ApiPort = 7004;

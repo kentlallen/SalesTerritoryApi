@@ -104,31 +104,20 @@ function App() {
         });
 
         if (!response.ok) {
-            if (response.status === 400) {
-                const errorData = await response.json();
-                // Transform API validation errors into a format the form can use
+            const errorData = await response.json();
+            
+            if (response.status === 422 && errorData.errors) {
+                // ValidationProblemDetails format
                 const formattedErrors = {};
-                for (const key in errorData.errors) {
-                    const lowerKey = key.toLowerCase();
-                    const messages = errorData.errors[key];
-
-                    // Handle array validation errors (like ZipCodes[0])
-                    if (lowerKey.startsWith('zipcodes[')) {
-                        if (formattedErrors.zipcodes) {
-                            formattedErrors.zipcodes += ` ${messages.join(' ')}`;
-                        } else {
-                            formattedErrors.zipcodes = messages.join(' ');
-                        }
-                    } else {
-                        formattedErrors[lowerKey] = messages.join(' ');
-                    }
+                for (const [field, messages] of Object.entries(errorData.errors)) {
+                    formattedErrors[field.toLowerCase()] = Array.isArray(messages) 
+                        ? messages.join(' ') 
+                        : messages;
                 }
                 throw formattedErrors;
             } else {
-                // Handle server errors (500, 503, etc.)
-                const errorJson = await response.json().catch(() => null);
-                const message = errorJson?.detail || "An unexpected server error occurred."
-                throw new Error(message);
+                // ProblemDetails format for other errors
+                throw new Error(errorData.detail || errorData.title || "An unexpected error occurred.");
             }
         }
 

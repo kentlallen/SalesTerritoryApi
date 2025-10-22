@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SalesTerritoryApi.Extensions
 {
+    /// <summary>
+    /// Extension methods for the IServiceCollection class
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
@@ -29,7 +32,7 @@ namespace SalesTerritoryApi.Extensions
             
             return services;
         }
-
+        
         public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<TerritoryDbContext>(options =>

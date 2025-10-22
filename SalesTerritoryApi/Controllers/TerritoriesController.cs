@@ -1,4 +1,3 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using SalesTerritoryApi.Models.DTOs;
 using SalesTerritoryApi.Models.ViewModels;
@@ -9,7 +8,7 @@ namespace SalesTerritoryApi.Controllers
     [ApiController]
     [Route("api/[controller]")]
     // Using primary constructor with dependency injection - keeps the controller lean
-    public class TerritoriesController(ITerritoryService _territoryService, IValidator<CreateTerritoryDto> _createValidator, IValidator<UpdateTerritoryDto> _updateValidator, ILogger<TerritoriesController> _logger) : ControllerBase
+    public class TerritoriesController(ITerritoryService _territoryService, ILogger<TerritoriesController> _logger) : ControllerBase
     {
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -37,32 +36,9 @@ namespace SalesTerritoryApi.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<TerritoryViewModel>> CreateTerritory(CreateTerritoryDto dto)
         {
-            // FluentValidation - run business rules before hitting the service layer
-            var validationResult = await _createValidator.ValidateAsync(dto);
-            if (!validationResult.IsValid)
-            {
-                // Transform FluentValidation errors into a format the frontend expects
-                var errors = new Dictionary<string, string[]>();
-                foreach (var error in validationResult.Errors)
-                {
-                    var key = error.PropertyName.ToLower();
-                    if (errors.ContainsKey(key))
-                    {
-                        var existingErrors = errors[key].ToList();
-                        existingErrors.Add(error.ErrorMessage);
-                        errors[key] = existingErrors.ToArray();
-                    }
-                    else
-                    {
-                        errors[key] = new[] { error.ErrorMessage };
-                    }
-                }
-                return BadRequest(new { errors });
-            }
-
             var createdTerritory = await _territoryService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetTerritory), new { id = createdTerritory.Id }, createdTerritory);
         }
@@ -70,31 +46,10 @@ namespace SalesTerritoryApi.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TerritoryViewModel>> UpdateTerritory(int id, UpdateTerritoryDto dto)
         {
-            // Same validation pattern as create - keeping it consistent
-            var validationResult = await _updateValidator.ValidateAsync(dto);
-            if (!validationResult.IsValid)
-            {
-                var errors = new Dictionary<string, string[]>();
-                foreach (var error in validationResult.Errors)
-                {
-                    var key = error.PropertyName.ToLower();
-                    if (errors.ContainsKey(key))
-                    {
-                        var existingErrors = errors[key].ToList();
-                        existingErrors.Add(error.ErrorMessage);
-                        errors[key] = existingErrors.ToArray();
-                    }
-                    else
-                    {
-                        errors[key] = new[] { error.ErrorMessage };
-                    }
-                }
-                return BadRequest(new { errors });
-            }
-
             var updatedTerritory = await _territoryService.UpdateAsync(id, dto);
             if (updatedTerritory == null)
             {

@@ -82,7 +82,7 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
-                            placeholder="e.g., Northern Utah County" // <-- Add placeholder
+                            placeholder="e.g., Northern Utah County"
                             required
                         />
                         {errors.name && <p className="error-message">{errors.name}</p>}
@@ -95,7 +95,7 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
                             name="zipCodes"
                             value={formData.zipCodes}
                             onChange={handleChange}
-                            placeholder="e.g., 84005, 84043, 84045" // <-- Add placeholder
+                            placeholder="e.g., 84005, 84043, 84045"
                             required
                         />
                         {errors.zipcodes && <p className="error-message">{errors.zipcodes}</p>}
@@ -107,7 +107,7 @@ export function TerritoryForm({ territory, onSave, onCancel }) {
                             name="demographics"
                             value={formData.demographics}
                             onChange={handleChange}
-                            placeholder={demographicsPlaceholder} // <-- Add placeholder
+                            placeholder={demographicsPlaceholder}
                             rows="5"
                         />
                     </div>
